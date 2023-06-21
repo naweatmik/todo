@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    li {
+      list-style: none;
+    }
+
+    body {
+      width: 100%;
+      height: 100vh;
+      background-color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .box {
+      width: 50%;
+      max-width: 500px;
+      min-height: 70%;
+      overflow: hidden;
+      background-color: #fff;
+      border-radius: 10px;
+    }
+
+    .box h2 {
+      font-size: 2rem;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .todo {
+      width: 95%;
+      overflow: hidden;
+      margin: 2.5% auto;
+    }
+
+    .todo input[type="text"] {
+      display: block;
+      width: 90%;
+      height: 50px;
+      border: 1px solid #ccc;
+      outline: none;
+      margin: 30px auto;
+      margin-top: 10px;
+      padding-left: 25px;
+      font-size: 90%;
+      font-weight: 700;
+      border-radius: 10px;
+    }
+
+    .todolist {
+      width: 90%;
+      overflow: hidden;
+      margin: auto;
+    }
+
+    .todolist li {
+      margin: 15px 0;
+      width: 100%;
+      height: 20px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+    }
+
+    .todolist li button {
+      display: block;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: #ccc;
+      font-size: .7rem;
+      float: right;
+      width: 30px;
+      height: 30px;
+    }
+
+    .todolist li button i {
+      color: inherit;
+    }
+  </style>
+  <script src="https://kit.fontawesome.com/3d60b45335.js" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const todoform = document.querySelector(".todo");
+      const todoinput = document.querySelector(".input");
+      const todolist = document.querySelector('.todolist');
+
+      const todo_ls = "할일";
+      let todos = [];
+
+      function deletetodo(event) {
+        const btn = event.target;
+        let li = btn.parentNode;
+        todolist.removeChild(li);
+        const cleantodos = todos.filter(function (todo) {
+          return todo.id !== parseInt(li.id);
+        });
+        todos = cleantodos;
+        saveTodos();
+      }
+
+      function saveTodos() {
+        localStorage.setItem(todo_ls, JSON.stringify(todos));
+      }
+
+      function painttodo(text) {
+        const li = document.createElement("li");
+        const delbtn = document.createElement("button");
+        const newid = todos.length + 1;
+        delbtn.innerHTML = "삭제";
+        delbtn.addEventListener("click", deletetodo);
+        li.innerText = text;
+        li.appendChild(delbtn);
+        li.id = newid;
+        todolist.appendChild(li);
+        const todoobj = {
+          text,
+          id: newid,
+        };
+        todos.push(todoobj);
+        saveTodos();
+      }
+
+      function handlesubmit(event) {
+        event.preventDefault();
+        const cvalue = todoinput.value;
+        painttodo(cvalue);
+        todoinput.value = "";
+      }
+
+      function loadtodo() {
+        const loadedtodos = localStorage.getItem(todo_ls);
+        if (loadedtodos !== null) {
+          const parsedtodo = JSON.parse(loadedtodos);
+          parsedtodo.forEach(function (todo) {
+            painttodo(todo.text);
+          });
+        }
+      }
+
+      function init() {
+        loadtodo();
+        todoform.addEventListener("submit", handlesubmit);
+      }
+      init();
+
+
+
+    });
+  </script>
+</head>
+
+<body>
+  <div class="box">
+    <h2>오늘할일</h2>
+    <form class="todo">
+      <input type="text" placeholder="오늘 할 일 입력하세요.." class="input">
+    </form>
+    <ul class="todolist">
+    </ul>
+  </div>
+
+
+</body>
+
+</html>
